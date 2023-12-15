@@ -1,6 +1,6 @@
 -- creates a function SafeDiv that divides and returns
 -- the first by the second number or 0 if the
---second number = 0
+-- second number = 0
 DELIMITER //
 
 CREATE FUNCTION SafeDiv(a INT, b INT)
