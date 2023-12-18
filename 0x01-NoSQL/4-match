@@ -1,0 +1,3 @@
+// list all document with specific attributes and
+// and their specific value
+db.school.find({ name: "Holberton school" })
