@@ -1,0 +1,4 @@
+// updates an already existing dat in a collection
+// that have a specific attribute to have an additional
+// attribute with a value
+db.school.update({ name: "Holberton school" }, {$set: { address: "972 Mssion street" } })
