@@ -8,7 +8,7 @@ def log_stats():
     client = MongoClient("mongodb://localhost:27017")
     db = client['logs']
     collection = db['nginx']
-    
+
     # Get the number of documents in the collection
     total_logs = collection.count_documents({})
     print(f"{total_logs} logs")
@@ -21,7 +21,8 @@ def log_stats():
         print(f"\tmethod {method}: {count}")
 
     # Count the number of status check
-    status_check = collection.count_documents({"method": "GET", "path": "/status"})
+    status_check = collection.count_documents(
+        {"method": "GET", "path": "/status"})
     print(f"{status_check} status check")
 
     # Top 10 most frequent IPs
@@ -33,6 +34,7 @@ def log_stats():
     ])
     for ip in top_ips:
         print(f"\t{ip['_id']}: {ip['count']}")
+
 
 if __name__ == "__main__":
     log_stats()
