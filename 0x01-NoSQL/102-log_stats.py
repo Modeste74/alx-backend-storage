@@ -4,6 +4,10 @@ from pymongo import MongoClient
 
 
 def log_stats():
+    """provides some stats about Nginx
+    logs stored in MongoDB and adds the top 10 of
+    the most present IPs in the collection nginx of
+    the database logs"""
     # Connect to MongoDB
     client = MongoClient("mongodb://localhost:27017")
     db = client['logs']
