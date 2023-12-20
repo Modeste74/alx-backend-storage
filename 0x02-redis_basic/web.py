@@ -4,8 +4,8 @@ import requests
 import redis
 import time
 
-# Initialize Redis connection
 redis_client = redis.Redis()
+
 
 def get_page(url: str) -> str:
     """Get the HTML content of a URL and cache it with tracking"""
@@ -24,4 +24,3 @@ def get_page(url: str) -> str:
     redis_client.setex(cache_key, 10, html_content)
 
     return html_content
-
