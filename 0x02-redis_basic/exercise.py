@@ -32,8 +32,8 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(output_ky, str(output))
         return output
     return wrapper
-    
-    
+
+
 def replay(self, func: Callable):
     """Display the history of calls for a given function"""
     input_key = f"{func.__qualname__}:inputs"
