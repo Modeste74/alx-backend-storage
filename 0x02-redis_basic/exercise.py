@@ -12,7 +12,7 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs) -> Any:
         """counts how many times the Cache class
         is called"""
-        key = f"{method.__qualname__}_calls"
+        key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
@@ -54,8 +54,6 @@ class Cache:
             ) -> Union[str, bytes, int, None]:
         """get the data from an already existing data in redis"""
         data = self._redis.get(key)
-        if data is None:
-            return "SHit aint waroking"
         if fn is not None:
             return fn(data)
         return data
