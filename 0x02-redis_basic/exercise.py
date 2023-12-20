@@ -3,18 +3,33 @@
 import redis
 import uuid
 from functools import wraps
-from typing import Union, Callable
+from typing import Any, Union, Callable
 
 
 def count_calls(method: Callable) -> Callable:
     """defines a callable wrapper"""
     @wraps(method)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self, *args, **kwargs) -> Any:
         """counts how many times the Cache class
         is called"""
         key = f"{method.__qualname__}_calls"
         self._redis.incr(key)
         return method(self, *args, **kwargs)
+    return wrapper
+
+
+def count_history(method: Callable) -> Callable:
+    """defines Callable wrapper"""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """stores the history of inputs and
+        outputs for a particular function"""
+        input_ky = '{}:inputs'.format(method.__qualname__)
+        output_ky = '{}:outputs'.format(method.__qualname__)
+        self._redis.rpush(input_ky, str(args))
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(output_ky, str(output))
+        return output
     return wrapper
 
 
@@ -40,7 +55,7 @@ class Cache:
         """get the data from an already existing data in redis"""
         data = self._redis.get(key)
         if data is None:
-            return None
+            return "SHit aint waroking"
         if fn is not None:
             return fn(data)
         return data
