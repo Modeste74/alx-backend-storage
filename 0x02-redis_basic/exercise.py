@@ -12,13 +12,14 @@ def count_calls(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs) -> Any:
         """counts how many times the Cache class
         is called"""
-        key = method.__qualname__
-        self._redis.incr(key)
+        if isinstance(self._redis, redis.Redis):
+            key = method.__qualname__
+            self._redis.incr(key)
         return method(self, *args, **kwargs)
     return wrapper
 
 
-def count_history(method: Callable) -> Callable:
+def call_history(method: Callable) -> Callable:
     """defines Callable wrapper"""
     @wraps(method)
     def wrapper(self, *args, **kwargs):
@@ -40,6 +41,8 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @call_history
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """takes a data argument and
         returns a string"""
@@ -54,14 +57,16 @@ class Cache:
             ) -> Union[str, bytes, int, None]:
         """get the data from an already existing data in redis"""
         data = self._redis.get(key)
+        if data is None:
+            return None
         if fn is not None:
             return fn(data)
         return data
 
-    def get_str(self, key: str) -> Union[str, None]:
+    def get_str(self, key: str) -> str:
         """retrieves a string from the Cache"""
         return self.get(key, fn=lambda d: d.decode("utf-8"))
 
-    def get_int(self, key: str) -> Union[int, None]:
+    def get_int(self, key: str) -> int:
         """retrieves an integer from the cache"""
         return self.get(key, fn=lambda d: int(d))
