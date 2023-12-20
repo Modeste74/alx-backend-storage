@@ -32,6 +32,23 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(output_ky, str(output))
         return output
     return wrapper
+    
+    
+def replay(self, func: Callable):
+    """Display the history of calls for a given function"""
+    input_key = f"{func.__qualname__}:inputs"
+    output_key = f"{func.__qualname__}:outputs"
+
+    input_list = self._redis.lrange(input_key, 0, -1)
+    output_list = self._redis.lrange(output_key, 0, -1)
+
+    num_calls = len(input_list)
+    print(f"{func.__qualname__} was called {num_calls} times:")
+
+    for inputs, output in zip(input_list, output_list):
+        inputs_str = inputs.decode('utf-8')
+        output_str = output.decode('utf-8')
+        print(f"{func.__qualname__}(*{inputs_str}) -> {output_str}")
 
 
 class Cache:
